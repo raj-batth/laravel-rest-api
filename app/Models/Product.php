@@ -10,7 +10,7 @@ class Product extends Model {
 
     const AVAILABLE_PRODUCT = 'available'; 
     const UNAVAILABLE_PRODUCT = 'unavailable';      
-         
+
     // All the filed to be massively assigned 
     protected $fillable = [
         'name',
@@ -23,5 +23,17 @@ class Product extends Model {
 
     public function isAvailable() {
         return $this->status === Product::AVAILABLE_PRODUCT;
+    }
+
+    public function categories() {
+        return $this->belongsToMany(Category::class);
+    }
+
+    public function seller(){
+      return $this->belongsToMany(Seller::class);
+    }
+
+    public function transactions() {
+        return $this->hasMany(Transaction::class);
     }
 }

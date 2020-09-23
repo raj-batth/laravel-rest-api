@@ -11,5 +11,11 @@ class Category extends Model
     protected $fillable = [
         'name',
         'description'
-    ]
+    ];
+
+    public function products()
+    {
+        // This category has many to many relationship to production e.e A category has multiple products and vice versa.
+        return $this->belongsToMany(Product::class);
+    }
 }
