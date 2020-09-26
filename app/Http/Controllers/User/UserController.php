@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserStoreRequest;
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Models\User;
@@ -33,12 +34,18 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\UserStoreRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UserStoreRequest $request)
     {
-        //
+        $data = $request->all();
+        $data['password'] = bcrypt($request->password);
+        $data['verified'] = User::UNVERIFIED_USER;
+        $data['verification_token'] = User::generateVerification();
+        $data['admin'] = User::REGULAR_USER;
+        $user =  User::create($data);
+        return new UserResource($user);
     }
 
     /**
