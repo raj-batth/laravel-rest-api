@@ -7,6 +7,7 @@ use App\Rules\VerifiedUserRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class UserUpdateRequest extends FormRequest
 {
@@ -33,10 +34,19 @@ class UserUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'email'     => 'required|email|unique:users',
-            'password'  => 'required|min:6|confirmed',
-            'admin'     => 'in:' . User::ADMIN_USER . ',' . User::REGULAR_USER,
-            new VerifiedUserRule($this->user), // Rule to check if user is allowed to change admin field means whether the user is verified or not
+            'email' => [
+                'sometimes', 
+                'required', 
+                'email', 
+                Rule::unique('users')->ignore($this->user)
+            ],
+            'password'  => 'sometimes|required|min:6|confirmed',
+            'admin'     => [
+                'sometimes',
+                'required',
+                'in:' . User::ADMIN_USER . ',' . User::REGULAR_USER,
+                new VerifiedUserRule($this->user), // Rule to check if user is allowed to change admin field means whether the user is verified or not
+            ],
         ];
     }
 }
