@@ -2,8 +2,13 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class Handler extends ExceptionHandler
 {
@@ -33,40 +38,21 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
-        // $this->reportable(function (ValidationException $exception) {
-        //     return $this->convertValidationExceptionToResponse($exception, $request);
-        // });
     }
 
-    /**
-     * ! OVERRIDDEN FUNCTIONS
-     */
-
-    /**
-     * Create a response object from the given validation exception.
-     *
-     * @param  \Illuminate\Validation\ValidationException  $e
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    protected function convertValidationExceptionToResponse(ValidationException $e, $request)
+    public function render($request, Throwable $exception)
     {
-        if ($e->response) {
-            return $e->response;
+        if ($exception instanceof ModelNotFoundException) {
+            $modelName = Str::lower(class_basename($exception->getModel()));
+
+            return response([
+                "message" => "Model not found.",
+                "errors" => [
+                    $modelName => [
+                        "No {$modelName} found with the provided id."
+                    ]
+                ]
+            ], Response::HTTP_NOT_FOUND);
         }
-
-        // return $request->expectsJson()
-        //             ? $this->invalidJson($request, $e)
-        //             : $this->invalid($request, $e);
-        
-        return $this->isFrontend($request) ? $this->invalid($request, $e) : $this->invalidJson($request, $e);
-    }
-
-    /**
-     * ! UTILITY FUNCTIONS
-     */
-    // Checking if the request is an HTML  request, using collections, find the middleware corresponding to the route and check if it contains 'web'
-    private function isFrontend($request) {
-        return $request->acceptsHtml() && collect($request->route()->middleware())->contains('web');
     }
 }
