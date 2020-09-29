@@ -2,12 +2,19 @@
 
 namespace App\Models;
 
+use App\Scopes\SellerScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Seller extends User
 {
     use HasFactory;
-    public function products() {
+    // ? Need to override booted method, to assign a global scope
+    protected static function booted()
+    {
+        static::addGlobalScope(new SellerScope);
+    }
+    public function products()
+    {
         return $this->hasMany(Product::class);
     }
 }
