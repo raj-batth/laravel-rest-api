@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -38,6 +39,9 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
+        // $this->reportable(function (ValidationException $exception) {
+        //     return $this->convertValidationExceptionToResponse($exception, $request);
+        // });
     }
 
     public function render($request, Throwable $exception)
@@ -52,6 +56,19 @@ class Handler extends ExceptionHandler
                         "No {$modelName} found with the provided id."
                     ]
                 ]
+            ], Response::HTTP_NOT_FOUND);
+        }
+        if ($exception instanceof ValidationException) {
+            return $this->convertValidationExceptionToResponse($exception, $request);
+        }
+        if ($exception instanceof NotFoundHttpException) {
+            return response([
+                "message" => "Invalid Url.",
+                "errors" => [
+                    "url" => [
+                        "{$request->fullUrl()} is invalid."
+                    ]
+                ],
             ], Response::HTTP_NOT_FOUND);
         }
     }

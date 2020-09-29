@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Users;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserResource extends JsonResource
+class UserCollection extends JsonResource
 {
     /**
      * Transform the resource collection into an array.
@@ -22,6 +22,11 @@ class UserResource extends JsonResource
             'admin' => $this->admin,
             'created_at' => isset($this->created_at) ? (string) $this->created_at : null,
             'updated_at' => isset($this->updated_at) ? (string) $this->updated_at : null,
+            'links' => [
+                [
+                    'href' => route('users.show', $this->id),
+                ],
+            ]
         ];
     }
 }
