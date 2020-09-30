@@ -2,13 +2,16 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
@@ -75,6 +78,50 @@ class Handler extends ExceptionHandler
         if ($exception instanceof AuthenticationException) {
             return $this->unauthenticated($request, $exception);
         }
+        if ($exception instanceof AuthorizationException) {
+            return response([
+                "message" => "Not authorized.",
+                "errors" => [
+                    'user' => [
+                        "{$exception->getMessage()}"
+                    ]
+                ],
+            ], Response::HTTP_FORBIDDEN);
+        }
+        if ($exception instanceof MethodNotAllowedHttpException) {
+            return response([
+                "message" => "Method not allowed.",
+                "errors" => [
+                    "url" => [
+                        "The {$request->method()} method is not supported for {$request->fullUrl()}"
+                    ]
+                ],
+            ], Response::HTTP_METHOD_NOT_ALLOWED);
+        }
+        if ($exception instanceof QueryException) {
+            $errorCode = $exception->errorInfo[1];
+            if ($errorCode === 1451) {
+                return response([
+                    "message" => "Resource conflict.",
+                    "errors" => [
+                        'resource' => [
+                            "This resource can't be removed because its instance is present in another table"
+                        ]
+                    ],
+                ], Response::HTTP_CONFLICT);
+            }
+        }
+        if (config('app.debug')) {
+            return parent::render($request, $exception);
+        }
+        return response([
+            "message" => "Server Error",
+            "errors" => [
+                'server' => [
+                    "Please try again."
+                ]
+            ],
+        ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
 
