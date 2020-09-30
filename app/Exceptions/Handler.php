@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -71,5 +72,50 @@ class Handler extends ExceptionHandler
                 ],
             ], Response::HTTP_NOT_FOUND);
         }
+        if ($exception instanceof AuthenticationException) {
+            return $this->unauthenticated($request, $exception);
+        }
+    }
+
+
+    /**
+     * ! OVERRIDDEN FUNCTIONS
+     */
+
+    /**
+     * Create a response object from the given validation exception.
+     *
+     * @param  \Illuminate\Validation\ValidationException  $e
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    protected function convertValidationExceptionToResponse(ValidationException $e, $request)
+    {
+        if ($e->response) {
+            return $e->response;
+        }
+        return $this->isFrontend($request) ? $this->invalid($request, $e) : $this->invalidJson($request, $e);
+    }
+
+    /**
+     * Create a response object from the given authentication exception.
+     *
+     * @param  \Illuminate\Validation\AuthenticationException  $e
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    protected function unauthenticated($request, AuthenticationException $exception)
+    {
+        return response()->json(['message' => $exception->getMessage()], Response::HTTP_UNAUTHORIZED);
+    }
+
+
+    /**
+     * ! UTILITY FUNCTIONS
+     */
+    // Checking if the request is an HTML  request, using collections, find the middleware corresponding to the route and check if it contains 'web'
+    private function isFrontend($request)
+    {
+        return $request->acceptsHtml() && collect($request->route()->middleware())->contains('web');
     }
 }
