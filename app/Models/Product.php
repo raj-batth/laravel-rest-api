@@ -4,13 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Product extends Model {
-    use HasFactory;
+class Product extends Model
+{
+    use HasFactory, SoftDeletes;
 
-    const AVAILABLE_PRODUCT = 'available'; 
-    const UNAVAILABLE_PRODUCT = 'unavailable';      
+    const AVAILABLE_PRODUCT = 'available';
+    const UNAVAILABLE_PRODUCT = 'unavailable';
 
+    protected $dates = ['deleted_at'];
     // All the filed to be massively assigned 
     protected $fillable = [
         'name',
@@ -21,19 +24,23 @@ class Product extends Model {
         'seller_id'
     ];
 
-    public function isAvailable() {
+    public function isAvailable()
+    {
         return $this->status === Product::AVAILABLE_PRODUCT;
     }
 
-    public function categories() {
+    public function categories()
+    {
         return $this->belongsToMany(Category::class);
     }
 
-    public function seller(){
-      return $this->belongsToMany(Seller::class);
+    public function seller()
+    {
+        return $this->belongsToMany(Seller::class);
     }
 
-    public function transactions() {
+    public function transactions()
+    {
         return $this->hasMany(Transaction::class);
     }
 }
