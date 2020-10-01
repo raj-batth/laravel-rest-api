@@ -29,7 +29,7 @@ class BuyerController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  Buyer $buyer
+     * @param  \App\Models\Buyer $buyer
      * @return \Illuminate\Http\Response
      */
     public function show(Buyer $buyer)

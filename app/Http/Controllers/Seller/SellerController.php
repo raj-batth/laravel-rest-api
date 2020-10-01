@@ -23,7 +23,7 @@ class SellerController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Seller  $seller
      * @return \Illuminate\Http\Response
      */
     public function show(Seller $seller)

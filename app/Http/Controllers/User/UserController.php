@@ -25,15 +25,6 @@ class UserController extends Controller
         return UserCollection::collection(User::paginate(20));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -55,7 +46,7 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  User $user
+     * @param  \App\Models\User $user
      * @return \Illuminate\Http\Response
      */
     public function show(User $user)
@@ -63,16 +54,6 @@ class UserController extends Controller
         return new UserResource($user);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
@@ -104,7 +85,7 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  User $user
+     * @param  \App\Models\User $user
      * @return \Illuminate\Http\Response
      */
     public function destroy(User $user)
