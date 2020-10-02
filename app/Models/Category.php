@@ -11,6 +11,11 @@ class Category extends Model
     use HasFactory, SoftDeletes;
 
     protected $dates = ['deleted_at'];
+
+    // ? The pivot table column will be visible if hidden property wont be set.. I was not required to use it since was using Resources and Collections(returned dat is being manipulated here).
+    protected $hidden = [
+        'pivot'
+    ];
     protected $fillable = [
         'name',
         'description'

@@ -14,6 +14,10 @@ class Product extends Model
     const UNAVAILABLE_PRODUCT = 'unavailable';
 
     protected $dates = ['deleted_at'];
+    // ? The pivot table column will be visible if hidden property wont be set.. I was not required to use it since was using Resources and Collections(returned dat is being manipulated here).
+    protected $hidden = [
+        'pivot'
+    ];
     // All the filed to be massively assigned 
     protected $fillable = [
         'name',
