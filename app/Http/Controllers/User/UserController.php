@@ -94,4 +94,12 @@ class UserController extends Controller
         $user->delete();
         return new UserResource($user);
     }
+    public function verify($token)
+    {
+        $user = User::where('verification_token', $token)->firstOrFail();
+        $user->verified = User::VERIFIED_USER;
+        $user->verification_token = null;
+        $user->save();
+        return "User account is verified";
+    }
 }
