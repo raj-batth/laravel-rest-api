@@ -11,6 +11,7 @@ use App\Models\Seller;
 use App\Models\User;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use PhpParser\Node\Expr\FuncCall;
 
 class SellerProductController extends Controller
@@ -36,7 +37,7 @@ class SellerProductController extends Controller
     {
         $data = $request->all();
         $data['status']    = Product::UNAVAILABLE_PRODUCT;
-        $data['image']     = '1.jpg';
+        $data['image']     = $request->image->store('');
         $data['seller_id'] = $seller->id;
         $product = Product::create($data);
         return new ProductResource($product);
@@ -82,10 +83,10 @@ class SellerProductController extends Controller
             }
         }
 
-        // // if ($request->has('image')) {
-        // //     Storage::delete($product->image);
-        // //     $product->image = $request->image->store('');
-        // // }
+        if ($request->has('image')) {
+            Storage::delete($product->image);
+            $product->image = $request->image->store('');
+        }
 
         $product->save();
         return new ProductResource($product);
@@ -111,6 +112,7 @@ class SellerProductController extends Controller
         }
 
         $product->delete();
+        Storage::delete($product->image);
         // ?? Don't need to delete image itself, since its only a soft delete
         return new ProductResource($product);
     }
