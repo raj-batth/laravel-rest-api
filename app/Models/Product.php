@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\CheckProductAvailabilityEvent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -26,6 +27,10 @@ class Product extends Model
         'status',
         'image',
         'seller_id'
+    ];
+    // ! Event emitter to change the product 'status' to 'unavailable' when the 'quantity' is reduced to 0 after performing a 'Transaction'
+    protected $dispatchesEvents = [
+        'updated' => CheckProductAvailabilityEvent::class,
     ];
 
     public function isAvailable()
