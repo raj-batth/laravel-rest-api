@@ -9,6 +9,7 @@ use App\Http\Resources\Users\UserCollection;
 use App\Http\Resources\Users\UserResource;
 use App\Mail\UserCreated;
 use App\Models\User;
+use App\Traits\Sorting;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -17,14 +18,16 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
 {
+    use Sorting;
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(User $user)
     {
-        return UserCollection::collection(User::paginate(20));
+        $users = $this->sortData($user->all());
+        return UserCollection::collection($users);
     }
 
 
@@ -42,7 +45,7 @@ class UserController extends Controller
         $data['verification_token'] = User::generateVerification();
         $data['admin'] = User::REGULAR_USER;
         $user =  User::create($data);
-   
+
         return new UserResource($user);
     }
 
