@@ -26,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // Event to send email to user on creating a user
         User::created(function ($user) {
             Mail::to($user)->send(new UserCreated($user));
         });
