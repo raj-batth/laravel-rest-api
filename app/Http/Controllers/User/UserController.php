@@ -7,9 +7,11 @@ use App\Http\Requests\Users\UserStoreRequest;
 use App\Http\Requests\Users\UserUpdateRequest;
 use App\Http\Resources\Users\UserCollection;
 use App\Http\Resources\Users\UserResource;
+use App\Mail\UserCreated;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -40,6 +42,7 @@ class UserController extends Controller
         $data['verification_token'] = User::generateVerification();
         $data['admin'] = User::REGULAR_USER;
         $user =  User::create($data);
+   
         return new UserResource($user);
     }
 
