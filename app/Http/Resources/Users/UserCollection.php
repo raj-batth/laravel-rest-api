@@ -25,6 +25,7 @@ class UserCollection extends JsonResource
             'deleted_at' => isset($this->deleted_at) ? (string) $this->deleted_at : null,
             'links' => [
                 [
+                    'rel' => 'self',
                     'href' => route('users.show', $this->id),
                 ],
             ]
