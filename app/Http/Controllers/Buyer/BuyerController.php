@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Users\UserCollection;
 use App\Http\Resources\Users\UserResource;
 use App\Models\Buyer;
+use App\Services\FilterAndSort\FilterAndSortFacade;
+use App\Services\Pagination\PaginationFacade;
 use Illuminate\Http\Request;
 
 class BuyerController extends Controller
@@ -15,7 +17,7 @@ class BuyerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Buyer $buyer)
     {
         // ! The user who has one or many transactions is a buyer, This "transactions" relation is defined on Buyer Model
 
@@ -23,7 +25,11 @@ class BuyerController extends Controller
         // $buyers = Buyer::has('transactions')->get();
         // UserCollection::collection(User::paginate(20))
 
-        return UserCollection::collection(Buyer::paginate(20));
+        $buyers = $buyer->all();
+        $filteredAndSortedBuyers = FilterAndSortFacade::apply($buyers, $buyer);
+        $paginatedBuyers = PaginationFacade::apply($filteredAndSortedBuyers);
+
+        return UserCollection::collection($paginatedBuyers);
     }
 
     /**

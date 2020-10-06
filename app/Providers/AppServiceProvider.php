@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Mail\UserCreated;
 use App\Mail\UserMailChanged;
 use App\Models\User;
+use App\Services\FilterAndSort\FilterAndSortService;
+use App\Services\Pagination\PaginationService;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\ServiceProvider;
 
@@ -17,7 +19,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind('FilterAndSortService', function () {
+            return new FilterAndSortService();
+        });
+
+        $this->app->bind('PaginationService', function () {
+            return new PaginationService();
+        });
     }
 
     /**

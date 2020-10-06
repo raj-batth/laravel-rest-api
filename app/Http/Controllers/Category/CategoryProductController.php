@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\Category;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Products\ProductCollection;
 use App\Models\Category;
+use App\Models\Product;
+use App\Services\FilterAndSort\FilterAndSortFacade;
+use App\Services\Pagination\PaginationFacade;
 use Illuminate\Http\Request;
 
 class CategoryProductController extends Controller
@@ -13,8 +17,13 @@ class CategoryProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Category $category)
+    public function index(Category $category, Product $product)
     {
-        return $category->products;
+        $products = $category->products;
+
+        $filteredAndSortedProducts = FilterAndSortFacade::apply($products, $product);
+        $paginatedProducts = PaginationFacade::apply($filteredAndSortedProducts);
+
+        return ProductCollection::collection($paginatedProducts);
     }
 }

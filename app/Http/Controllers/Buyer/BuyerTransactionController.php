@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Transactions\TransactionCollection;
 use App\Http\Resources\Transactions\TransactionResource;
 use App\Models\Buyer;
+use App\Models\Transaction;
+use App\Services\FilterAndSort\FilterAndSortFacade;
+use App\Services\Pagination\PaginationFacade;
 use Illuminate\Http\Request;
 
 class BuyerTransactionController extends Controller
@@ -15,8 +18,12 @@ class BuyerTransactionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Buyer $buyer)
+    public function index(Buyer $buyer, Transaction $transaction)
     {
-        return  TransactionCollection::collection($buyer->transactions);
+        $transactions = $buyer->transactions;
+
+        $filteredAndSortedTransactions = FilterAndSortFacade::apply($transactions, $transaction);
+        $paginatedTransactions = PaginationFacade::apply($filteredAndSortedTransactions);
+        return TransactionCollection::collection($paginatedTransactions);
     }
 }

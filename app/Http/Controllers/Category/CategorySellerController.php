@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Category;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Users\UserCollection;
 use App\Models\Category;
-use Illuminate\Http\Request;
+use App\Models\Seller;
+use App\Services\FilterAndSort\FilterAndSortFacade;
+use App\Services\Pagination\PaginationFacade;
 
 class CategorySellerController extends Controller
 {
@@ -14,12 +16,16 @@ class CategorySellerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Category $category)
+    public function index(Category $category, Seller $seller)
     {
-        return UserCollection::collection($category->products()
+        $sellers = $category->products()
             ->with('seller')
             ->get()->pluck('seller')
             ->unique()
-            ->values());
+            ->values();
+        $filteredAndSortedSellers = FilterAndSortFacade::apply($sellers, $seller);
+        $paginatedSellers = PaginationFacade::apply($filteredAndSortedSellers);
+
+        return UserCollection::collection($paginatedSellers);
     }
 }

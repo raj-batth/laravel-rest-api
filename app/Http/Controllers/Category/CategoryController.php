@@ -8,6 +8,8 @@ use App\Http\Requests\Categories\CategoryUpdateRequest;
 use App\Http\Resources\Categories\CategoryCollection;
 use App\Http\Resources\Categories\CategoryResource;
 use App\Models\Category;
+use App\Services\FilterAndSort\FilterAndSortFacade;
+use App\Services\Pagination\PaginationFacade;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -17,9 +19,14 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Category $category)
     {
-        return CategoryCollection::collection(Category::paginate(20));
+        $categories = $category->all();
+
+        $filteredAndSortedCategories = FilterAndSortFacade::apply($categories, $category);
+        $paginatedCategories = PaginationFacade::apply($filteredAndSortedCategories);
+
+        return CategoryCollection::collection($paginatedCategories);
     }
 
     /**

@@ -7,7 +7,10 @@ use App\Http\Resources\Products\ProductCollection;
 use App\Http\Resources\Products\ProductResource;
 use App\Http\Resources\Transactions\TransactionCollection;
 use App\Models\Buyer;
+use App\Models\Product;
 use App\Models\Transaction;
+use App\Services\FilterAndSort\FilterAndSortFacade;
+use App\Services\Pagination\PaginationFacade;
 use Illuminate\Http\Request;
 
 class BuyerProductController extends Controller
@@ -17,8 +20,14 @@ class BuyerProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Buyer $buyer)
+    public function index(Buyer $buyer, Product $product)
     {
-        return $product = ProductCollection::collection($buyer->transactions()->with('product')->get()->pluck('product'));
+        $transactionsWithProducts = $buyer->transactions()->with('product')->get();
+        $products = $transactionsWithProducts->pluck('product');
+
+        $filteredAndSortedProducts = FilterAndSortFacade::apply($products, $product);
+        $paginatedProducts = PaginationFacade::apply($filteredAndSortedProducts);
+
+        return ProductCollection::collection($paginatedProducts);
     }
 }

@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Seller;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Transactions\TransactionCollection;
 use App\Models\Seller;
+use App\Models\Transaction;
+use App\Services\FilterAndSort\FilterAndSortFacade;
+use App\Services\Pagination\PaginationFacade;
 use Illuminate\Http\Request;
 
 class SellerTransactionController extends Controller
@@ -14,14 +17,15 @@ class SellerTransactionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Seller $seller)
+
+    public function index(Seller $seller, Transaction $transaction)
     {
-        $transactions = $seller->products()
-            ->whereHas('transactions')
-            ->with('transactions')
-            ->get()
-            ->pluck('transactions')
-            ->collapse();
-        return TransactionCollection::collection($transactions);
+        $productWithTransactions = $seller->products()->whereHas('transactions')->with('transactions')->get();
+        $transactions = $productWithTransactions->pluck('transactions')->collapse();
+
+        $filteredAndSortedTransactions = FilterAndSortFacade::apply($transactions, $transaction);
+        $paginatedTransactions = PaginationFacade::apply($filteredAndSortedTransactions);
+
+        return TransactionCollection::collection($paginatedTransactions);
     }
 }

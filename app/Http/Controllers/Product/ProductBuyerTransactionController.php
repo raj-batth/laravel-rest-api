@@ -75,7 +75,7 @@ class ProductBuyerTransactionController extends Controller
                 'message' => 'Conflict.',
                 'errors' => [
                     'product' => [
-                        'The provided does not have anough units available for this transaction.'
+                        'The provided does not have enough units available for this transaction.'
                     ]
                 ]
             ], Response::HTTP_CONFLICT);

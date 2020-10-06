@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Seller;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Seller\SellerProductStoreRequest;
 use App\Http\Requests\Seller\SellerProductUpdateRequest;
+use App\Http\Resources\Products\ProductCollection;
 use App\Http\Resources\Products\ProductResource;
 use App\Models\Product;
 use App\Models\Seller;
 use App\Models\User;
+use App\Services\FilterAndSort\FilterAndSortFacade;
+use App\Services\Pagination\PaginationFacade;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -21,9 +24,14 @@ class SellerProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Seller $seller)
+    public function index(Seller $seller, Product $product)
     {
-        return $product = $seller->products;
+        $products = $seller->products;
+
+        $filteredAndSortedProducts = FilterAndSortFacade::apply($products, $product);
+        $paginatedProducts = PaginationFacade::apply($filteredAndSortedProducts);
+
+        return ProductCollection::collection($paginatedProducts);
     }
 
 
@@ -76,7 +84,7 @@ class SellerProductController extends Controller
                     'message' => 'Update conflict.',
                     'errors' => [
                         'category' => [
-                            'An available product must belong to atleast one Category.'
+                            'An available product must belong to at least one Category.'
                         ]
                     ]
                 ], Response::HTTP_CONFLICT);

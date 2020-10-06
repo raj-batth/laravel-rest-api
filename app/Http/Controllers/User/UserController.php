@@ -9,17 +9,11 @@ use App\Http\Resources\Users\UserCollection;
 use App\Http\Resources\Users\UserResource;
 use App\Mail\UserCreated;
 use App\Models\User;
-use App\Traits\Paginate;
-use App\Traits\Sorting;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
-use Symfony\Component\HttpFoundation\Response;
+use App\Services\FilterAndSort\FilterAndSortFacade;
+use App\Services\Pagination\PaginationFacade;
 
 class UserController extends Controller
 {
-    use Sorting, Paginate;
     /**
      * Display a listing of the resource.
      *
@@ -27,9 +21,11 @@ class UserController extends Controller
      */
     public function index(User $user)
     {
-        $users = $this->sortData($user->all());
-        $users = $this->paginate($users);
-        return UserCollection::collection($users);
+        $users = $user->all();
+        $filteredAndSortedUsers = FilterAndSortFacade::apply($users, $user);
+        $paginatedUsers = PaginationFacade::apply($filteredAndSortedUsers);
+
+        return UserCollection::collection($paginatedUsers);
     }
 
 

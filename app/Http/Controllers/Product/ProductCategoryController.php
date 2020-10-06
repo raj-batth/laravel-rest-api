@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Categories\CategoryCollection;
 use App\Models\Category;
 use App\Models\Product;
+use App\Services\FilterAndSort\FilterAndSortFacade;
+use App\Services\Pagination\PaginationFacade;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -16,10 +18,14 @@ class ProductCategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Product $product)
+    public function index(Product $product, Category $category)
     {
         $categories = $product->categories;
-        return CategoryCollection::collection($categories);
+
+        $filteredAndSortedCategories = FilterAndSortFacade::apply($categories, $category);
+        $paginatedCategories = PaginationFacade::apply($filteredAndSortedCategories);
+        
+        return CategoryCollection::collection($paginatedCategories);
     }
 
     /**

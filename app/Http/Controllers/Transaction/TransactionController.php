@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Transactions\TransactionCollection;
 use App\Http\Resources\Transactions\TransactionResource;
 use App\Models\Transaction;
+use App\Services\FilterAndSort\FilterAndSortFacade;
+use App\Services\Pagination\PaginationFacade;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
@@ -15,9 +17,14 @@ class TransactionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Transaction $transaction)
     {
-        return TransactionCollection::collection(Transaction::paginate(20));
+        $transactions = $transaction->all();
+
+        $filteredAndSortedTransactions = FilterAndSortFacade::apply($transactions, $transaction);
+        $paginatedTransactions = PaginationFacade::apply($filteredAndSortedTransactions);
+
+        return TransactionCollection::collection($paginatedTransactions);
     }
 
     /**

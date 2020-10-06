@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Products\ProductCollection;
 use App\Http\Resources\Products\ProductResource;
 use App\Models\Product;
+use App\Services\FilterAndSort\FilterAndSortFacade;
+use App\Services\Pagination\PaginationFacade;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -15,9 +17,14 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Product $product)
     {
-        return ProductCollection::collection(Product::paginate(20));
+        $products = $product->all();
+
+        $filteredAndSortedProducts = FilterAndSortFacade::apply($products, $product);
+        $paginatedProducts = PaginationFacade::apply($filteredAndSortedProducts);
+        
+        return ProductCollection::collection($paginatedProducts);
     }
 
     /**

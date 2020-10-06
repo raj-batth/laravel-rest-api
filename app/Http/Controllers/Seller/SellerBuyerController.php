@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Users\UserCollection;
+use App\Models\Buyer;
 use App\Models\Seller;
+use App\Services\FilterAndSort\FilterAndSortFacade;
+use App\Services\Pagination\PaginationFacade;
 use Illuminate\Http\Request;
 
 class SellerBuyerController extends Controller
@@ -14,9 +17,9 @@ class SellerBuyerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Seller $seller)
+    public function index(Seller $seller, Buyer $buyer)
     {
-        $buyer = $seller->products()
+        $buyers = $seller->products()
             ->whereHas('transactions')
             ->with('transactions.buyer')
             ->get()
@@ -25,6 +28,9 @@ class SellerBuyerController extends Controller
             ->pluck('buyer')
             ->unique('id')
             ->values();
-        return UserCollection::collection($buyer);
+        $filteredAndSortedBuyers = FilterAndSortFacade::apply($buyers, $buyer);
+        $paginatedBuyers = PaginationFacade::apply($filteredAndSortedBuyers);
+
+        return UserCollection::collection($paginatedBuyers);
     }
 }
