@@ -48,7 +48,7 @@
 | Sellers's Transaction:    | http://127.0.0.1:8000/api/sellers/{seller_id}/transactions | GET          |
 | Seller can create a new Product:    | http://127.0.0.1:8000/api/sellers/{seller_id}/products | POST          |
 | Seller can update a Product:    | http://127.0.0.1:8000/api/sellers/{seller_id/products/{product_id} | PUT          |
-| Seller can delete a Product:    | http://127.0.0.1:8000/api/sellers/{seller_id}/products/{product_id} | GET          |
+| Seller can delete a Product:    | http://127.0.0.1:8000/api/sellers/{seller_id}/products/{product_id} | DELETE          |
 
 
 ## License
