@@ -27,6 +27,22 @@ class TransactionCollection extends JsonResource
                     'rel' => 'self',
                     'href' => route('transactions.show', $this->id),
                 ],
+                [
+                    'rel' => 'buyer',
+                    'href' => route('buyers.show', $this->id),
+                ],
+                [
+                    'rel' => 'product',
+                    'href' => route('products.show', $this->id),
+                ],
+                [
+                    'rel' => 'transaction.sellers',
+                    'href' => route('transactions.sellers.index', $this->id),
+                ],
+                [
+                    'rel' => 'transaction.categories',
+                    'href' => route('transactions.categories.index', $this->id),
+                ],
             ]
         ];
     }
