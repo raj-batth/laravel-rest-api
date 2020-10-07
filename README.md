@@ -29,7 +29,7 @@
 -   **Soft deletes**
 -   **Resources**
 
-## Few Endpoints fro testing
+## Few Endpoints for testing
 
 | Description                      | Payload                                                             | HTTP Methods |
 | -------------------------------- | ------------------------------------------------------------------- | ------------ |
