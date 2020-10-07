@@ -1,4 +1,4 @@
-# Restful RESTful API
+# RESTful API
 
 <p align="center">
   <a href="https://laravel.com/" alt="Built with: Laravel v8.1.0">
